@@ -1,8 +1,17 @@
 import markdown
 from lxml import etree
 
-body_markdown = "This is an [inline link](http://google.com). This is a [non inline link][1]\r\n\r\n  [1]: http://yahoo.com"
+from pathlib import Path
 
-doc = etree.fromstring(markdown.markdown(body_markdown))
-for link in doc.xpath('//a'):
-    print(link.text, link.get('href'))
+dir = '/home/bradleybossard/src/cheatsheets/reading-lists'
+pattern = '**/*.md'
+
+for filename in Path(dir).glob(pattern):
+    with open(filename, 'r') as file:
+        body_markdown = file.read()
+        html = markdown.markdown(body_markdown)
+        html = '<html>' + html + '</html>'
+        doc = etree.fromstring(html)
+        for link in doc.xpath('//a'):
+            print(link.get('href'))
+
